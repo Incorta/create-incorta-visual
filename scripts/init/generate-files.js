@@ -1,8 +1,8 @@
 const chalk = require('chalk');
 const fse = require('fs-extra');
 const { join, resolve } = require('path');
-const shelljs = require('shelljs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const componentPackageJsonGenerator = require('../../resources/templates/package.json.js');
 const definitionJsonGenerator = require('../../resources/templates/definition.json.js');
@@ -106,7 +106,7 @@ async function generateFiles(directory, options) {
 
     let packageManager = 'npm';
     let currentDir = currentProcessDir;
-    while (currentDir !== '/') {
+    while (currentDir !== path.parse(currentDir).root) {
       if (fse.existsSync(path.join(currentDir, 'yarn.lock'))) {
         packageManager = 'yarn';
         break;
@@ -122,7 +122,7 @@ async function generateFiles(directory, options) {
 
     console.log(chalk.grey(`Using ${packageManager} as the package manager`));
 
-    shelljs.exec(`${packageManager} install`, {
+    execSync(`${packageManager} install`, {
       stdio: 'inherit',
       cwd: newComponentPath
     });
@@ -130,15 +130,15 @@ async function generateFiles(directory, options) {
     console.log(chalk.grey('Initialize git repo...'));
 
     try {
-      shelljs.exec('git init', {
+      execSync('git init', {
         stdio: 'inherit',
         cwd: newComponentPath
       });
-      shelljs.exec('git add -A', {
+      execSync('git add -A', {
         stdio: 'inherit',
         cwd: newComponentPath
       });
-      shelljs.exec('git commit -m init', {
+      execSync('git commit -m init', {
         stdio: 'inherit',
         cwd: newComponentPath
       });
