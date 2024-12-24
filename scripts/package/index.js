@@ -1,9 +1,9 @@
 const path = require('path');
-const shelljs = require('shelljs');
 const fs = require('fs-extra');
 const archiver = require('archiver');
 const chalk = require('chalk');
 const { resolvePath } = require('../utils');
+const { execSync } = require('child_process');
 
 /**
  * @param {String} source
@@ -30,7 +30,7 @@ const createBuildPackage = async () => {
     let vitePath = require.resolve('vite');
     let viteBinPath = path.join(vitePath, '../..', '.bin', 'vite');
     let configFilePath = path.resolve(__dirname, './vite-config-prod.js');
-    shelljs.exec(`${viteBinPath} build --config "${configFilePath}"`);
+    execSync(`${viteBinPath} build --config "${configFilePath}"`);
 
     console.log(chalk.gray('Compressing bundle...'));
     let distPath = resolvePath('dist');
